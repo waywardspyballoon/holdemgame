@@ -50,9 +50,11 @@ class Player(Card):
     def __init__(self, board):
         self.board = board
         self.fiveCardHand = None
-        self.active = True
         self.stack = int(100)
-        self.position = 0
+        self.didFold = False
+        self.hasChecked = False
+        self.hasCalled = False
+        self.isAllIn = False
 
 class HighCard(Card):
 
@@ -114,7 +116,7 @@ class TwoPair:
         return self.fiveCardHand
 
     def __str__(self):
-        return f'Two Pair : {ranks[self.fiveCardHand[0] + 1]} over ' \
+        return f'Two Pair, {ranks[self.fiveCardHand[0] + 1]} over ' \
                f'{ranks[self.fiveCardHand[2] + 1]}'
 
 class Trips(Card):
