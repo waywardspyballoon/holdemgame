@@ -38,9 +38,6 @@ class Deck:
     def __init__(self):
         self.builder = [(rnk, sut) for rnk in rank for sut in suit]
         self.deck = []
-        ##mock to test functionality.  in this case straight flush logic
-        # self.builder = [(4,1),(5,1),(6,1),(10,1),(8,1),(2,1),(3,1),(9,1)]
-        # self.deck = []
         for item in self.builder:
             self.deck.append(Card(item))
         random.shuffle(self.deck)
@@ -50,7 +47,9 @@ class Player(Card):
     def __init__(self, board):
         self.board = board
         self.fiveCardHand = None
+        self.playerLastBet = 0
         self.stack = int(100)
+        self.hasBet = False
         self.didFold = False
         self.hasChecked = False
         self.hasCalled = False

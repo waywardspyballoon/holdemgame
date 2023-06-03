@@ -19,8 +19,6 @@ if __name__ == "__main__":
     
     players = [Player(Board(flop, HoleCards(deckForGame))),
               Player(Board(flop, HoleCards(deckForGame)))]
-            #   Player(Board(flop, HoleCards(deckForGame))),
-            #   Player(Board(flop, HoleCards(deckForGame)))]
 
 
     def setupAndAnalyze(total_players):
@@ -50,7 +48,7 @@ if __name__ == "__main__":
     game = Game(total_players)
     start = GameRound(game, 0)
     start.setup_action()
-    start.betting_action()
+    start.bettingAction()
 
     # for player in total_players:
     #     print(player.board.initRank)
