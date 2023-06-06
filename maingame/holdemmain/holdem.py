@@ -104,6 +104,13 @@ class TwoPair:
                 self.fiveCardHand = [self.pairs[0], self.pairs[0],
                                     self.pairs[1], self.pairs[1],
                                     self.pairs[2]]
+                return self.fiveCardHand
+            self.fiveCardHand = [self.pairs[0], self.pairs[0],
+                                self.pairs[1], self.pairs[1],
+                                self.unpairedElements[0]]
+            return self.fiveCardHand
+            
+                
         elif len(self.pairs) == 3 and not self.unpairedElements:
             self.fiveCardHand = [self.pairs[0], self.pairs[0],
                                 self.pairs[1],self.pairs[1],

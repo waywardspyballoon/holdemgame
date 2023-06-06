@@ -1,7 +1,7 @@
-# from holdemmain import Analyze, SortForAnalysis
-# from holdemmain import (HighCard, OnePair, TwoPair,
-#                     Trips, Straight, Flush, 
-#                     FullHouse, Quads, StraightFlush)
+from holdemmain import Analyze, SortForAnalysis
+from holdemmain import (HighCard, OnePair, TwoPair,
+                    Trips, Straight, Flush, 
+                    FullHouse, Quads, StraightFlush)
 from holdemmain import *
 from copy import deepcopy
 

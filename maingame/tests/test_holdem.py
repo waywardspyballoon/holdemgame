@@ -36,6 +36,42 @@ class HoldemTest(unittest.TestCase):
 
         self.assertEqual(total_players[0].board.handRank, 5)
 
+    def test_correctly_assigning_2_pair(self):
+        def addstreet(street, total_players):
+            for player in total_players:
+                player.board.add(street)
+            return None
+        def setupAndAnalyze(total_players):
+            for player in total_players:
+                player.board.createSortable()
+                player.board.getRank()
+                player.board.storeFiveCardHand()
+            return None
+        deckForGame = MagicMock()
+        deckForGame.builder = [(4,2),(11,3),(2,1),(11,1),(4,1),(7,2),(8,1),(2,3)]
+        deckForGame.deck = []
+        for item in deckForGame.builder:
+            deckForGame.deck.append(Card(item))
+        
+        flop = (deckForGame.deck.pop(0),
+            deckForGame.deck.pop(0),
+            deckForGame.deck.pop(0))
+    
+        players = [Player(Board(flop, HoleCards(deckForGame)))]
+            
+        total_players = players[:]
+        setupAndAnalyze(total_players)
+
+        turn = deckForGame.deck.pop(0)
+        addstreet(turn, total_players)
+        setupAndAnalyze(total_players)
+
+        river = deckForGame.deck.pop(0)
+        addstreet(river, total_players)
+        setupAndAnalyze(total_players)
+
+        self.assertEqual(total_players[0].board.handRank, 2)
+
 
         
 
