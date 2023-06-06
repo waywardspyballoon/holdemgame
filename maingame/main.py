@@ -24,12 +24,11 @@ if __name__ == "__main__":
             player.board.add(street)
         return None
     
-    def mainGameLoop():
+    def mainGameLoop(firstToAct = 0):
         x = input('Begin?')
         if x == 'n':
             exit()
        
-
         deckForGame = Deck()
         flop = (deckForGame.deck.pop(0),
                 deckForGame.deck.pop(0),
@@ -39,7 +38,7 @@ if __name__ == "__main__":
         total_players = players[:]
         setupAndAnalyze(total_players)
         game = Game(total_players, deckForGame)
-        start = GameRound(game, 0)
+        start = GameRound(game, 0, firstToAct)
         start.setup_action()
         start.bettingAction()
 
@@ -49,18 +48,31 @@ if __name__ == "__main__":
         turn = deckForGame.deck.pop(0)
         addstreet(turn, total_players)
         setupAndAnalyze(total_players)
+    
+        print(total_players[0].isAllIn, total_players[0].isAllIn)
+
+        start = GameRound(game, 1, firstToAct)
+        start.setup_action()
+        start.bettingAction()
 
         for player in total_players:
             print(player.board.initRank)
+
         
         river = deckForGame.deck.pop(0)
         addstreet(river, total_players)
         setupAndAnalyze(total_players)
 
+        start = GameRound(game, 2, firstToAct)
+        start.setup_action()
+        start.bettingAction()
+
         for player in total_players:
             print(player.board.initRank)
         
-        mainGameLoop()
+        firstToAct += 1
+        
+        mainGameLoop(firstToAct)
     
     mainGameLoop()
         
