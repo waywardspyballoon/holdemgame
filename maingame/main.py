@@ -37,28 +37,31 @@ if __name__ == "__main__":
                    Player(Board(flop, HoleCards(deckForGame)))]
         total_players = players[:]
         setupAndAnalyze(total_players)
+        total_players[0].stack -= 25
         game = Game(total_players, deckForGame)
         start = GameRound(game, 0, firstToAct)
         start.setup_action()
         start.bettingAction()
 
+
         for player in total_players:
             print(player.board.initRank)
+        
+        print('dealing turn')
 
         turn = deckForGame.deck.pop(0)
         addstreet(turn, total_players)
         setupAndAnalyze(total_players)
     
-        print(total_players[0].isAllIn, total_players[0].isAllIn)
-
         start = GameRound(game, 1, firstToAct)
         start.setup_action()
         start.bettingAction()
 
+        print('dealing river')
+
         for player in total_players:
             print(player.board.initRank)
 
-        
         river = deckForGame.deck.pop(0)
         addstreet(river, total_players)
         setupAndAnalyze(total_players)
@@ -71,6 +74,9 @@ if __name__ == "__main__":
             print(player.board.initRank)
         
         firstToAct += 1
+
+        print(f'pot is {game.pot}')
+        print('it is ovah')
         
         mainGameLoop(firstToAct)
     
