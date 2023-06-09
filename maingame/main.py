@@ -24,20 +24,27 @@ if __name__ == "__main__":
             player.board.add(street)
         return None
     
-    def mainGameLoop(firstToAct = 0):
+    def mainGameLoop(firstToAct = 0, p1stack = 100, p2stack = 100):
+        if p1stack == 0 or p2stack == 0:
+            reload = input('[r]eload or [e]xit')
         x = input('Begin?')
         if x == 'n':
             exit()
-       
+        
+
         deckForGame = Deck()
         flop = (deckForGame.deck.pop(0),
                 deckForGame.deck.pop(0),
                 deckForGame.deck.pop(0)) 
+
         players = [Player(Board(flop, HoleCards(deckForGame))),
-                   Player(Board(flop, HoleCards(deckForGame)))]
+                Player(Board(flop, HoleCards(deckForGame)))]
+        
+        players[0].stack = p1stack
+        players[1].stack = p2stack
+
         total_players = players[:]
         setupAndAnalyze(total_players)
-        total_players[0].stack -= 25
         game = Game(total_players, deckForGame)
         start = GameRound(game, 0, firstToAct)
         start.setup_action()
@@ -77,9 +84,28 @@ if __name__ == "__main__":
 
         print(f'pot is {game.pot}')
         print('it is ovah')
+
+        if players[0].board == players[1].board:
+
+            print('tie! split pot!')
+
+            for player in game.players:
+                player.stack += (game.pot / 2)
+            
+        elif players[0].board > players[1].board:
+            print('player 0 wins!')
+
+            players[0].stack += game.pot
         
-        mainGameLoop(firstToAct)
-    
+        else:
+            print('player 1 wins!')
+            players[1].stack += game.pot
+
+        p1stack = players[0].stack
+        p2stack = players[1].stack
+        
+        mainGameLoop(firstToAct, p1stack, p2stack)
+
     mainGameLoop()
         
 

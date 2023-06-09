@@ -45,7 +45,7 @@ class Board(Card):
     def storeFiveCardHand(self):
         self.initRank = self.handRankDict[self.handRank](self)
         self.fiveCardHand = self.initRank.create_5card_Hand_Obj()
-        print(self.fiveCardHand)
+        # print(self.fiveCardHand)
 
     def add(self, card: Card):
         self.boardState.append(card)
@@ -53,3 +53,39 @@ class Board(Card):
 
     def exportedBoard(self):
         return deepcopy(self.boardState)
+    
+    def __gt__(self, other):
+
+        if self.handRank > other.handRank:
+            return True
+        elif self.handRank < other.handRank:
+            return False
+        
+        for _ in self.fiveCardHand:
+            first = self.fiveCardHand.pop(0)
+            second = other.fiveCardHand.pop(0)
+            if first > second:
+                return True
+            elif first < second:
+                return False
+            else:
+                continue
+
+    def __eq__(self, other):
+
+        if self.handRank > other.handRank:
+            return False
+        elif self.handRank < other.handRank:
+            return False
+        
+        for _ in range(0, len(self.fiveCardHand)):
+            first = self.fiveCardHand.pop(0)
+            second = other.fiveCardHand.pop(0)
+            if first > second:
+                return False
+            elif first < second:
+                return False
+            else:
+                continue
+        return True
+        

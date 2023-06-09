@@ -8,7 +8,7 @@ class GameRound:
 
     def setup_action(self):
         if self.street == 0:
-            if self.firstToAct == 0:
+            if self.firstToAct % 2 == 0:
                 self.firstToAct = 1
             else:
                 self.firstToAct = 0
@@ -41,36 +41,15 @@ class GameRound:
             self.game.players[self.firstToAct % 2].hasChecked = True
             self.firstToAct += 1
             return None
-        if action == 'r':
-            upperBound = int(self.game.players[self.firstToAct % 2].stack + self.game.players[self.firstToAct % 2].playerLastBet)
-            new_value = input(f'raise size (between {self.currentBet} and \
-                                {upperBound} \n')
-            new_value = int(new_value)
-            self.currentBet = new_value
-            self.betDifference = (self.currentBet - self.game.players[self.firstToAct % 2].playerLastBet)
-            self.game.players[self.firstToAct % 2].stack -= self.betDifference
-            self.game.pot += self.betDifference
-            self.game.players[self.firstToAct % 2].hasBet = True
-            self.game.players[self.firstToAct % 2].playerLastBet = self.currentBet
-            if self.game.players[self.firstToAct % 2].stack == 0:
-                print('reaching')
-                self.game.players[self.firstToAct % 2].isAllIn = True
-            
-            for player in self.game.players:
-                player.hasCalled = False
-
-
-            self.firstToAct += 1
-
-            return None
         
+        if action == 'r':
+            raiseBet(self)
 
     def checkOrBet(self):
         self.print_action()
         action = input(f'[c]heck, [b]et (amount 0 - {self.game.players[self.firstToAct % 2].stack}\n')
 
         if action == 'c':
-            print('block 2')
             self.game.players[self.firstToAct % 2].hasChecked = True
             self.firstToAct += 1
             return None
@@ -86,7 +65,6 @@ class GameRound:
             self.game.pot += self.currentBet
             self.game.players[self.firstToAct % 2].playerLastBet = self.currentBet
             self.game.players[self.firstToAct % 2].stack -= self.currentBet
-            print(self.game.players[self.firstToAct % 2].stack, self.game.pot)
             self.firstToAct += 1
             return None
                 
@@ -108,30 +86,12 @@ class GameRound:
         
         if action == 'r':
 
-            upperBound = int(self.game.players[self.firstToAct % 2].stack + self.game.players[self.firstToAct % 2].playerLastBet)
-            new_value = input(f'raise size (between {self.currentBet} and \
-                                {upperBound} \n')
-            new_value = int(new_value)
-            self.currentBet = new_value
-            self.betDifference = (self.currentBet - self.game.players[self.firstToAct % 2].playerLastBet)
-            self.game.players[self.firstToAct % 2].stack -= self.betDifference
-            self.game.pot += self.betDifference
-            self.game.players[self.firstToAct % 2].hasBet = True
-            self.game.players[self.firstToAct % 2].playerLastBet = self.currentBet
-            if self.game.players[self.firstToAct % 2].stack == 0:
-                print('reaching')
-                self.game.players[self.firstToAct % 2].isAllIn = True
-
-            self.firstToAct += 1
-
-            return None
+            raiseBet(self)
 
         if action == 'c':
-            print(self.game.players[self.firstToAct % 2].playerLastBet)
 
             if self.street == 0:
                 if self.game.players[self.firstToAct % 2].playerLastBet == .5:
-                    print('block 1')
                     new_value = 1
                     self.currentBet = new_value
                     self.betDifference = (self.currentBet - self.game.players[self.firstToAct % 2].playerLastBet)
@@ -160,7 +120,6 @@ class GameRound:
             self.game.pot += (self.currentBet - self.game.players[self.firstToAct % 2].playerLastBet)
 
             if self.game.players[self.firstToAct % 2].stack == 0:
-                print('reaching')
 
                 self.game.players[self.firstToAct % 2].isAllIn = True
             
@@ -175,9 +134,6 @@ class GameRound:
     def bettingAction(self):
 
         while not self.endRoundEvent:
-
-            print(self.game.players[0].hasChecked, self.game.players[1].hasCalled)
-
 
             if self.game.players[0].hasChecked and self.game.players[1].hasCalled:
                 break
@@ -197,7 +153,10 @@ class GameRound:
                     self.callOrFold()
                     if self.game.players[self.firstToAct % 2].hasCalled:
                         self.game.players[self.firstToAct % 2].isAllIn = True
-                    break
+                        break
+                    elif self.game.players[self.firstToAct % 2].didFold == True:
+                        break
+                
                 elif self.currentBet >= (self.game.players[self.firstToAct % 2].stack + \
                                             self.game.players[self.firstToAct % 2].playerLastBet):
                     self.callOrFold()
@@ -205,11 +164,14 @@ class GameRound:
                 elif (self.game.players[self.firstToAct % 2].playerLastBet + self.game.players[self.firstToAct % 2].stack <= \
                       self.currentBet):
                     self.callOrFold()
-                    self.endRoundEvent = 1
+                    if self.game.players[self.firstToAct % 2].didFold == True:
+                        break
                 elif self.street == 0 and self.game.pot == 2:
                     self.checkOrRaise()
                 else:
                     self.callRaiseOrFold()
+                    if self.game.players[self.firstToAct % 2].didFold == True:
+                        break
 
             if self.game.players[0].hasChecked and self.game.players[1].hasChecked:
                 self.endRoundEvent = 1
@@ -229,4 +191,28 @@ def bet(roundObject, amount):
     roundObject.game.players[roundObject.firstToAct % 2].playerLastBet = roundObject.currentBet
     roundObject.game.players[roundObject.firstToAct % 2].stack -= roundObject.currentBet
     roundObject.game.players[roundObject.firstToAct % 2].hasBet = True
-    return None          
+    return None
+
+def raiseBet(roundObject):
+    upperBound = int(roundObject.game.players[roundObject.firstToAct % 2].stack + roundObject.game.players[roundObject.firstToAct % 2].playerLastBet)
+    new_value = input(f'raise size (between {roundObject.currentBet} and \
+                        {upperBound} \n')
+    new_value = float(new_value)
+    roundObject.currentBet = new_value
+    roundObject.betDifference = (roundObject.currentBet - roundObject.game.players[roundObject.firstToAct % 2].playerLastBet)
+    roundObject.game.players[roundObject.firstToAct % 2].stack -= roundObject.betDifference
+    roundObject.game.pot += roundObject.betDifference
+    roundObject.game.players[roundObject.firstToAct % 2].hasBet = True
+    roundObject.game.players[roundObject.firstToAct % 2].playerLastBet = roundObject.currentBet
+    if roundObject.game.players[roundObject.firstToAct % 2].stack == 0:
+        roundObject.game.players[roundObject.firstToAct % 2].isAllIn = True
+    
+    for player in roundObject.game.players:
+        player.hasCalled = False
+
+    roundObject.firstToAct += 1
+
+    return None
+
+
+        
