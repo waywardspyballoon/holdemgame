@@ -56,7 +56,7 @@ class GameRound:
 
         if action == 'b':
             current = input(f'input amount from 1 - {self.game.players[self.firstToAct % 2].stack} \n')
-            current = int(current)
+            current = float(current)
             if current > self.game.players[self.firstToAct % 2].stack or 0 >= current:
                 print('invalid amount')
                 self.checkOrBet()
@@ -198,19 +198,36 @@ def raiseBet(roundObject):
     new_value = input(f'raise size (between {roundObject.currentBet} and \
                         {upperBound} \n')
     new_value = float(new_value)
-    roundObject.currentBet = new_value
-    roundObject.betDifference = (roundObject.currentBet - roundObject.game.players[roundObject.firstToAct % 2].playerLastBet)
-    roundObject.game.players[roundObject.firstToAct % 2].stack -= roundObject.betDifference
-    roundObject.game.pot += roundObject.betDifference
-    roundObject.game.players[roundObject.firstToAct % 2].hasBet = True
-    roundObject.game.players[roundObject.firstToAct % 2].playerLastBet = roundObject.currentBet
-    if roundObject.game.players[roundObject.firstToAct % 2].stack == 0:
-        roundObject.game.players[roundObject.firstToAct % 2].isAllIn = True
-    
-    for player in roundObject.game.players:
-        player.hasCalled = False
 
-    roundObject.firstToAct += 1
+    if new_value > upperBound:
+        print('invalid selection, value must be lower than or equal to stack size')
+        new_value = 0
+        raiseBet(roundObject)
+
+    elif new_value < 0:
+        print('invalid selection, value must be greater than 0')
+        new_value = 0
+        raiseBet(roundObject)
+
+    elif new_value <= roundObject.currentBet:
+        print('invalid selection, value must exceed current raise size')
+        new_value = 0
+        raiseBet(roundObject)
+
+    if new_value:
+        roundObject.currentBet = new_value
+        roundObject.betDifference = (roundObject.currentBet - roundObject.game.players[roundObject.firstToAct % 2].playerLastBet)
+        roundObject.game.players[roundObject.firstToAct % 2].stack -= roundObject.betDifference
+        roundObject.game.pot += roundObject.betDifference
+        roundObject.game.players[roundObject.firstToAct % 2].hasBet = True
+        roundObject.game.players[roundObject.firstToAct % 2].playerLastBet = roundObject.currentBet
+        if roundObject.game.players[roundObject.firstToAct % 2].stack == 0:
+            roundObject.game.players[roundObject.firstToAct % 2].isAllIn = True
+        
+        for player in roundObject.game.players:
+            player.hasCalled = False
+
+        roundObject.firstToAct += 1
 
     return None
 
