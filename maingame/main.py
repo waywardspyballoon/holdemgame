@@ -27,6 +27,12 @@ if __name__ == "__main__":
     def mainGameLoop(firstToAct = 0, p1stack = 100, p2stack = 100):
         if p1stack == 0 or p2stack == 0:
             reload = input('[r]eload or [e]xit')
+            if reload == 'r':
+                if not p1stack:
+                    p1stack = 100
+                else:
+                    p2stack = 100
+
         x = input('Begin?')
         if x == 'n':
             exit()
