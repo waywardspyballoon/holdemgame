@@ -14,9 +14,8 @@ class GameRound:
                 self.firstToAct = 0
             
             bet(self, .5)
-            self.firstToAct += 1
             bet(self, 1)
-            self.firstToAct += 1
+
         else:
             self.game.players[0].hasCalled = False
             self.game.players[1].hasCalled = False
@@ -55,18 +54,8 @@ class GameRound:
             return None
 
         if action == 'b':
-            current = input(f'input amount from 1 - {self.game.players[self.firstToAct % 2].stack} \n')
-            current = float(current)
-            if current > self.game.players[self.firstToAct % 2].stack or 0 >= current:
-                print('invalid amount')
-                self.checkOrBet()
-            self.currentBet = current
-            self.game.players[self.firstToAct % 2].hasBet = True
-            self.game.pot += self.currentBet
-            self.game.players[self.firstToAct % 2].playerLastBet = self.currentBet
-            self.game.players[self.firstToAct % 2].stack -= self.currentBet
-            self.firstToAct += 1
-            return None
+
+            bet(self)
                 
     def callRaiseOrFold(self):
 
@@ -114,7 +103,13 @@ class GameRound:
         action = input(f'[c]all bet (bet amount : {self.currentBet} with remaining stack : \
                        {self.game.players[self.firstToAct % 2].stack}\n or [f]old?')
         if action == 'c':
-            # self.game.pot += self.game.players[self.firstToAct % 2].stack
+
+            if self.game.players[self.firstToAct % 2].stack < self.currentBet:
+                amount_to_replace = self.game.players[(self.firstToAct + 1) % 2].playerLastBet - (self.game.players[self.firstToAct % 2].playerLastBet + self.game.players[self.firstToAct % 2].stack)
+                self.currentBet = self.game.players[self.firstToAct % 2].stack + self.game.players[self.firstToAct % 2].playerLastBet
+                self.game.players[(self.firstToAct + 1) % 2].stack += amount_to_replace
+                self.game.pot -= amount_to_replace
+
             self.betDifference = (self.currentBet - self.game.players[self.firstToAct % 2].playerLastBet)
             self.game.players[self.firstToAct % 2].stack -= self.betDifference    
             self.game.pot += (self.currentBet - self.game.players[self.firstToAct % 2].playerLastBet)
@@ -185,13 +180,43 @@ class GameRound:
 
         
 
-def bet(roundObject, amount):
-    roundObject.currentBet = amount
-    roundObject.game.pot += roundObject.currentBet
-    roundObject.game.players[roundObject.firstToAct % 2].playerLastBet = roundObject.currentBet
-    roundObject.game.players[roundObject.firstToAct % 2].stack -= roundObject.currentBet
-    roundObject.game.players[roundObject.firstToAct % 2].hasBet = True
+def bet(roundObject, amount = 0):
+
+    def bettingLogic(amount):
+        roundObject.currentBet = amount
+        roundObject.game.pot += roundObject.currentBet
+        roundObject.game.players[roundObject.firstToAct % 2].playerLastBet = roundObject.currentBet
+        roundObject.game.players[roundObject.firstToAct % 2].stack -= roundObject.currentBet
+        roundObject.game.players[roundObject.firstToAct % 2].hasBet = True
+        roundObject.firstToAct += 1
+        return None
+    
+    if amount > 0:
+        bettingLogic(amount)
+        return None
+    
+    current = input(f'input amount from 1 - {roundObject.game.players[roundObject.firstToAct % 2].stack} \n')
+    if current == '':
+        print('invalid selection, field cannot be blank')
+        bet(roundObject)
+        return None
+    current = float(current)
+
+    if current > roundObject.game.players[roundObject.firstToAct % 2].stack:
+        print('invalid selection, value must be lower than or equal to stack size')
+        current = 0
+        bet(roundObject)
+        return None
+
+    elif current < 0:
+        print('invalid selection, value must be greater than 0')
+        current = 0    
+        bet(roundObject)
+        return None
+    
+    bettingLogic(current)
     return None
+    
 
 def raiseBet(roundObject):
     upperBound = int(roundObject.game.players[roundObject.firstToAct % 2].stack + roundObject.game.players[roundObject.firstToAct % 2].playerLastBet)
@@ -230,6 +255,3 @@ def raiseBet(roundObject):
         roundObject.firstToAct += 1
 
     return None
-
-
-        

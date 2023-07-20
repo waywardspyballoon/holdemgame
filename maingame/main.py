@@ -49,41 +49,57 @@ if __name__ == "__main__":
         start = GameRound(game, 0, firstToAct)
         start.setup_action()
         start.bettingAction()
-
-
-        for player in total_players:
-            print(player.board.initRank)
         
         print('dealing turn')
 
         turn = deckForGame.deck.pop(0)
         addstreet(turn, total_players)
         setupAndAnalyze(total_players)
+
+        if players[0].didFold == False and players[1].didFold == False:
+            for player in total_players:
+                print(player.board.initRank)
     
-        start = GameRound(game, 1, firstToAct)
-        start.setup_action()
-        start.bettingAction()
+            start = GameRound(game, 1, firstToAct)
+            start.setup_action()
+            start.bettingAction()
 
         print('dealing river')
-
-        for player in total_players:
-            print(player.board.initRank)
-
         river = deckForGame.deck.pop(0)
         addstreet(river, total_players)
         setupAndAnalyze(total_players)
 
-        start = GameRound(game, 2, firstToAct)
-        start.setup_action()
-        start.bettingAction()
+        if players[0].didFold == False and players[1].didFold == False:
+            for player in total_players:
+                print(player.board.initRank)
 
-        for player in total_players:
-            print(player.board.initRank)
+            start = GameRound(game, 2, firstToAct)
+            start.setup_action()
+            start.bettingAction()
+
+            for player in total_players:
+                print(player.board.initRank)
         
         firstToAct += 1
 
         print(f'pot is {game.pot}')
         print('it is ovah')
+
+        if players[0].didFold == True or players[1].didFold == True:
+            if players[0].didFold:
+                players[1].stack += game.pot
+                p1stack = players[0].stack
+                p2stack = players[1].stack
+                print('pot awarded to player 1, player 0 folded!')
+                mainGameLoop(firstToAct, p1stack, p2stack)
+                return None
+            players[0].stack += game.pot
+            p1stack = players[0].stack
+            p2stack = players[1].stack
+            print('pot awarded to player 0, player 1 folded!')
+            mainGameLoop(firstToAct, p1stack, p2stack)
+            return None
+                
 
         if players[0].board == players[1].board:
 

@@ -78,7 +78,7 @@ class Board(Card):
         elif self.handRank < other.handRank:
             return False
         
-        for _ in range(0, len(self.fiveCardHand)):
+        for _ in range(0, len(self.fiveCardHand)                                                                                                                                                                                                                                                                                                                                                        ):
             first = self.fiveCardHand.pop(0)
             second = other.fiveCardHand.pop(0)
             if first > second:
