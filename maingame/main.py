@@ -49,16 +49,22 @@ if __name__ == "__main__":
         players[0].stack = p1stack
         players[1].stack = p2stack
 
+        BOARD = [card for card in flop]
+
         total_players = players[:]
         setupAndAnalyze(total_players)
         game = Game(total_players, deckForGame)
-        start = GameRound(game, 0, firstToAct)
+        start = GameRound(game, 0, firstToAct, BOARD)
         start.setup_action()
         start.bettingAction()
         
         print('dealing turn')
 
         turn = deckForGame.deck.pop(0)
+
+        BOARD.append(turn)
+
+        
         addstreet(turn, total_players)
         setupAndAnalyze(total_players)
 
@@ -66,12 +72,15 @@ if __name__ == "__main__":
             for player in total_players:
                 print(player.board.initRank)
     
-            start = GameRound(game, 1, firstToAct)
+            start = GameRound(game, 1, firstToAct, BOARD)
             start.setup_action()
             start.bettingAction()
 
         print('dealing river')
         river = deckForGame.deck.pop(0)
+
+        BOARD.append(river)
+
         addstreet(river, total_players)
         setupAndAnalyze(total_players)
 
@@ -79,7 +88,7 @@ if __name__ == "__main__":
             for player in total_players:
                 print(player.board.initRank)
 
-            start = GameRound(game, 2, firstToAct)
+            start = GameRound(game, 2, firstToAct, BOARD)
             start.setup_action()
             start.bettingAction()
 

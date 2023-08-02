@@ -12,8 +12,8 @@ singrank = {1: "Deuce", 2: "Three", 3: "Four",
             10: "Jack", 11: "Queen", 12: "King",
             13: "Ace"}
 
-suits = {1: 'clubs', 2: 'diamonds', 3: 'hearts',
-         4: 'spades'}
+suits = {1: '♣', 2: '♦', 3: '♥',
+         4: '♠'}
 
 rank = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 suit = [0, 1, 2, 3]
@@ -25,7 +25,7 @@ class Card:
         self.suit = card[1]
 
     def __str__(self):
-        return f'Rank : {singrank[self.rank + 1]} Suit: {suits[self.suit + 1]}'
+        return f'{singrank[self.rank + 1]} of {suits[self.suit + 1]}'
     
 class HoleCards(Card):
     

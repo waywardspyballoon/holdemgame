@@ -1,10 +1,13 @@
+import os
+
 class GameRound:
-    def __init__(self, game, street, first):
+    def __init__(self, game, street, first, board):
         self.currentBet = 0
         self.game = game
         self.street = street
         self.firstToAct = first
         self.endRoundEvent = 0
+        self.board = board
 
     def setup_action(self):
         if self.street == 0:
@@ -29,13 +32,34 @@ class GameRound:
             self.endRoundEvent = 0
     
     def print_action(self):
+        os.system('cls')
         print(f'player {self.firstToAct % 2} \n\
               remaining stack {self.game.players[self.firstToAct % 2].stack}\
               size of pot {self.game.pot}')
+        print('\n')
+              
+        print('Board : ', end = ' ')
+        counter = 0
+        for card in self.board:
+            print(f'| {card} |', end = '')
+            counter += 1
+            if counter > 2:
+                print('', end = '  ')
+
+
+
+        print('\nHole Cards : ', end = '')
+
+        for card in self.game.players[self.firstToAct % 2].board.holeCards.holecards:
+            print(f'| {card} |', end = '')
+    
+
+        print(f'\n{self.game.players[self.firstToAct % 2].board.initRank}')
+        
     
     def checkOrRaise(self):
         self.print_action()
-        action = input('[c]heck or [r]aise ')
+        action = input('\n[c]heck or [r]aise ')
         if action == 'c':
             self.game.players[self.firstToAct % 2].hasChecked = True
             self.firstToAct += 1
@@ -46,7 +70,7 @@ class GameRound:
 
     def checkOrBet(self):
         self.print_action()
-        action = input(f'[c]heck, [b]et (amount 0 - {self.game.players[self.firstToAct % 2].stack}\n')
+        action = input(f'\n[c]heck, [b]et (amount 0 - {self.game.players[self.firstToAct % 2].stack}\n')
 
         if action == 'c':
             self.game.players[self.firstToAct % 2].hasChecked = True
@@ -63,7 +87,7 @@ class GameRound:
         if self.street == 0 and self.game.pot == 2:
             self.checkOrRaise()
 
-        action = input(f'[c]all (amount : {self.currentBet}, [r]aise, or [f]old \n')
+        action = input(f'\n[c]all (amount : {self.currentBet}, [r]aise, or [f]old \n')
 
         if not action:
             print('try again, empty field is not valid response')
@@ -100,7 +124,7 @@ class GameRound:
 
     def callOrFold(self):
         self.print_action()
-        action = input(f'[c]all bet (bet amount : {self.currentBet} with remaining stack : \
+        action = input(f'\n[c]all bet (bet amount : {self.currentBet} with remaining stack : \
                        {self.game.players[self.firstToAct % 2].stack}\n or [f]old?')
         if action == 'c':
 
@@ -119,6 +143,7 @@ class GameRound:
                 self.game.players[self.firstToAct % 2].isAllIn = True
             
             self.game.players[self.firstToAct % 2].hasCalled = True
+            self.endRoundEvent = 1
             return None
         
         if action == 'f':
@@ -188,6 +213,9 @@ def bet(roundObject, amount = 0):
         roundObject.game.players[roundObject.firstToAct % 2].playerLastBet = roundObject.currentBet
         roundObject.game.players[roundObject.firstToAct % 2].stack -= roundObject.currentBet
         roundObject.game.players[roundObject.firstToAct % 2].hasBet = True
+        if roundObject.game.players[roundObject.firstToAct % 2].stack == 0:
+            roundObject.game.players[roundObject.firstToAct % 2].isAllIn = True
+
         roundObject.firstToAct += 1
         return None
     
