@@ -46,8 +46,6 @@ class GameRound:
             if counter > 2:
                 print('', end = '  ')
 
-
-
         print('\nHole Cards : ', end = '')
 
         for card in self.game.players[self.firstToAct % 2].board.holeCards.holecards:
@@ -69,7 +67,7 @@ class GameRound:
             raiseBet(self)
 
     def checkOrBet(self):
-        self.print_action()
+        self.print_action()      
         action = input(f'\n[c]heck, [b]et (amount 0 - {self.game.players[self.firstToAct % 2].stack}\n')
 
         if action == 'c':
@@ -161,13 +159,15 @@ class GameRound:
             if self.game.players[1].hasChecked and self.game.players[0].hasCalled:
                 break
 
-
             if self.game.players[0].isAllIn and self.game.players[1].isAllIn:
                 break
 
             if not self.game.players[0].hasBet and not self.game.players[0].hasBet:
+                for player in self.game.players:
+                    if player.isAllIn:
+                        return None
                 self.checkOrBet()
-            
+           
             if self.currentBet:
                 if self.game.players[0].isAllIn or self.game.players[1].isAllIn:
                     self.callOrFold()

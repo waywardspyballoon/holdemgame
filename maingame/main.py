@@ -1,4 +1,5 @@
 from holdemmain import *
+import os
 
 
 if __name__ == "__main__":
@@ -33,11 +34,6 @@ if __name__ == "__main__":
                 else:
                     p2stack = 100
 
-        x = input('Begin?')
-        if x == 'n':
-            exit()
-        
-
         deckForGame = Deck()
         flop = (deckForGame.deck.pop(0),
                 deckForGame.deck.pop(0),
@@ -69,8 +65,6 @@ if __name__ == "__main__":
         setupAndAnalyze(total_players)
 
         if players[0].didFold == False and players[1].didFold == False:
-            for player in total_players:
-                print(player.board.initRank)
     
             start = GameRound(game, 1, firstToAct, BOARD)
             start.setup_action()
@@ -85,20 +79,18 @@ if __name__ == "__main__":
         setupAndAnalyze(total_players)
 
         if players[0].didFold == False and players[1].didFold == False:
-            for player in total_players:
-                print(player.board.initRank)
 
             start = GameRound(game, 2, firstToAct, BOARD)
             start.setup_action()
             start.bettingAction()
 
-            for player in total_players:
-                print(player.board.initRank)
-        
+
         firstToAct += 1
 
         print(f'pot is {game.pot}')
-        print('it is ovah')
+        for player in total_players:
+            print(player.board.initRank)
+        
 
         if players[0].didFold == True or players[1].didFold == True:
             if players[0].didFold:
