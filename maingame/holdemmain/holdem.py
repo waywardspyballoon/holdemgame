@@ -54,6 +54,7 @@ class Player(Card):
         self.hasChecked = False
         self.hasCalled = False
         self.isAllIn = False
+        self.name = None
 
 class HighCard(Card):
 

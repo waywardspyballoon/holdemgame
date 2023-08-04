@@ -33,7 +33,7 @@ class GameRound:
     
     def print_action(self):
         os.system('cls')
-        print(f'player {self.firstToAct % 2} \n\
+        print(f'player {self.game.players[self.firstToAct % 2].name} \n\
               remaining stack {self.game.players[self.firstToAct % 2].stack}\
               size of pot {self.game.pot}')
         print('\n')

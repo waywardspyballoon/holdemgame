@@ -1,4 +1,5 @@
 from holdemmain import *
+import time
 import os
 
 
@@ -25,7 +26,7 @@ if __name__ == "__main__":
             player.board.add(street)
         return None
     
-    def mainGameLoop(firstToAct = 0, p1stack = 100, p2stack = 100):
+    def mainGameLoop(firstToAct = 0, p1stack = 100, p2stack = 100, p1name = 0, p2name = 0):
         if p1stack == 0 or p2stack == 0:
             reload = input('[r]eload or [e]xit')
             if reload == 'r':
@@ -33,6 +34,7 @@ if __name__ == "__main__":
                     p1stack = 100
                 else:
                     p2stack = 100
+
 
         deckForGame = Deck()
         flop = (deckForGame.deck.pop(0),
@@ -42,8 +44,17 @@ if __name__ == "__main__":
         players = [Player(Board(flop, HoleCards(deckForGame))),
                 Player(Board(flop, HoleCards(deckForGame)))]
         
+        
         players[0].stack = p1stack
         players[1].stack = p2stack
+
+        if not p1name:
+            p1name = input('Select player 1 name : ')
+        players[0].name = p1name
+        if not p2name:
+            p2name = input('Select player 2 name : ')
+        players[1].name = p2name
+
 
         BOARD = [card for card in flop]
 
@@ -98,13 +109,15 @@ if __name__ == "__main__":
                 p1stack = players[0].stack
                 p2stack = players[1].stack
                 print('pot awarded to player 1, player 0 folded!')
-                mainGameLoop(firstToAct, p1stack, p2stack)
+                time.sleep(5)
+                mainGameLoop(firstToAct, p1stack, p2stack, p1name, p2name)
                 return None
             players[0].stack += game.pot
             p1stack = players[0].stack
             p2stack = players[1].stack
             print('pot awarded to player 0, player 1 folded!')
-            mainGameLoop(firstToAct, p1stack, p2stack)
+            time.sleep(5)
+            mainGameLoop(firstToAct, p1stack, p2stack, p1name, p2name)
             return None
                 
 
@@ -116,18 +129,21 @@ if __name__ == "__main__":
                 player.stack += (game.pot / 2)
             
         elif players[0].board > players[1].board:
-            print('player 0 wins!')
+            print(f'{players[0].name} wins!')
 
             players[0].stack += game.pot
         
         else:
-            print('player 1 wins!')
+            print(f'{players[1].name} wins!')
             players[1].stack += game.pot
+
 
         p1stack = players[0].stack
         p2stack = players[1].stack
+
+        time.sleep(5)
         
-        mainGameLoop(firstToAct, p1stack, p2stack)
+        mainGameLoop(firstToAct, p1stack, p2stack, p1name, p2name)
 
     mainGameLoop()
         
