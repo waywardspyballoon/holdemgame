@@ -78,10 +78,6 @@ class Client:
         
         return current
 
-            
-        
-        
-
     def active_turn_representation(self, option):
         def CR():
             selection = input('[c]heck or [r]aise? : ')
@@ -90,11 +86,8 @@ class Client:
                 return
             if selection.lower() == 'r':
                 self.send('R')
-                print('entering')
                 raise_info = self.socket.recv(1024).decode('ascii').split('*')
                 raise_transmit = self.raise_func(raise_info[0], raise_info[1])
-##                print(f'rs {raise_transmit}')
-##                self.socket.send(f'{raise_transmit}'.encode('ascii'))
                 self.send(raise_transmit)
                 return
                 
@@ -119,14 +112,44 @@ class Client:
                 CB()
             
         def CRF():
-            pass
+            selection = input('[c]all, [r]aise, or [f]old?')
+            if selection.lower() == 'c':
+                self.send('C')
+                return
+            if selection.lower() == 'r':
+                self.send('R')
+                raise_info = self.socket.recv(1024).decode('ascii').split('*')
+                raise_transmit = self.raise_func(raise_info[0], raise_info[1])
+                self.send(raise_transmit)
+                return
+            if selection.lower() == 'f':
+                self.send('F')
+                return
+            else:
+                print('invalid selection')
+                CRF()
+                        
         def CF():
-            pass
+            selection = input('[c]all or [f]old?')
+            if selection.lower() == 'c':
+                self.send('C')
+                return
+            if selection.lower() == 'f':
+                self.send('F')
+                return
+            else:
+                print('invalid selection')
+                CF()
+                
 
         if option == 'CR':
             return CR()
         if option == 'CB':
             return CB()
+        if option == 'CRF':
+            return CRF()
+        if option == 'CF':
+            return CF()
                             
     def recv(self):
         while 1:
@@ -134,9 +157,9 @@ class Client:
                 data = self.socket.recv(1024).decode('ascii')
                 if data == 'ISTURN':
                     representation = self.socket.recv(1024).decode('ascii')
-                    print('reaching')
                     self.print_current_gamestate_on_turn(representation)
                     option = self.socket.recv(1024).decode('ascii')
+                    print('reaching')
                     action = self.active_turn_representation(option)
             except:
                 print('something went wrong')

@@ -60,10 +60,6 @@ class GameRound:
     
 
         print(f'\n{self.game.players[self.firstToAct % 2].board.initRank}')
-
-        # self.game.netConn.connections[self.firstToAct % 2][0].send
-        # game_state_elements_to_send = (self.game.players[self.firstToAct % 2].stack, \
-        #                                {self.game.pot})
         
     
     def checkOrRaise(self):
