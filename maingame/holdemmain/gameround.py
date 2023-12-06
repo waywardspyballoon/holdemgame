@@ -111,8 +111,15 @@ class GameRound:
         self.print_action()
         if self.street == 0 and self.game.pot == 2:
             self.checkOrRaise()
+        
+        print(f'\n[c]all (amount : {self.currentBet}, [r]aise, or [f]old \n')
+        
+        self.game.netConn.connections[self.firstToAct % 2][0].send('ISTURN'.encode('ascii'))
+        self.game.netConn.connections[self.firstToAct % 2][0].send(f'{self.currentBet}'.encode('ascii'))
+        self.game.netConn.connections[self.firstToAct % 2][0].send('CRF'.encode('ascii'))
+        action = self.game.netConn.connections[self.firstToAct % 2][0].recv(1024).decode('ascii').lower()
 
-        action = input(f'\n[c]all (amount : {self.currentBet}, [r]aise, or [f]old \n')
+        print(f'\n[c]all (amount : {self.currentBet}, [r]aise, or [f]old \n')
 
         if not action:
             print('try again, empty field is not valid response')
@@ -149,8 +156,13 @@ class GameRound:
 
     def callOrFold(self):
         self.print_action()
-        action = input(f'\n[c]all bet (bet amount : {self.currentBet} with remaining stack : \
+        print(f'\n[c]all bet (bet amount : {self.currentBet} with remaining stack : \
                        {self.game.players[self.firstToAct % 2].stack}\n or [f]old?')
+        
+        self.game.netConn.connections[self.firstToAct % 2][0].send('ISTURN'.encode('ascii'))
+        self.game.netConn.connections[self.firstToAct % 2][0].send('CF'.encode('ascii'))
+        action = self.game.netConn.connections[self.firstToAct % 2][0].recv(1024).decode('ascii').lower()
+
         if action == 'c':
 
             if self.game.players[self.firstToAct % 2].stack < self.currentBet:

@@ -1,4 +1,0 @@
-embed server code into main game loop code
-have clients connect, have action represented as text sent to them (move action text over to the client side)
-check to make sure input is valid on client side before sending to server
-
