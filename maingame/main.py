@@ -1,18 +1,58 @@
 from holdemmain import *
 import time
 import os
+import socket
+import threading
 
 
 if __name__ == "__main__":
 
+    # class NetworkServerThread(threading.Thread):
+    #     def __init__(self):
+    #         threading.Thread.__init__(self)
+    #         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    #         self.threads = []
+        
+    #     def run(self):
+    #         self.socket.bind(('127.0.0.1', 1235))
+    #         self.socket.listen(2)
+    #         while len(self.threads) < 2:
+    #             new_conn = Thread(target = self.new_thread())
+    #             print(f'connected')
+    #             self.threads.append(new_conn)
+            
+    #     def new_thread(self):
+    #         self.socket.accept()
+
+    class NetworkServer:
+
+        def __init__(self):
+            self.connections = []
+            self.baseport = 1235
+            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.socket.bind(('127.0.0.1', self.baseport))
+            self.socket.listen(2)
+        
+        def run(self):
+            print(f'waiting for 2 players...')
+            while len(self.connections) < 2:
+                conn, addr = self.socket.accept()
+                self.connections.append((conn, addr))
+                print(f'connected to {conn}{addr}')
+                if len(self.connections) == 1:
+                    self.connections[0][0].send(b'0')
+                else:
+                    self.connections[1][0].send(b'1')
+
     class Game:
 
-        def __init__(self, players, deck):
+        def __init__(self, players, deck, netConn):
             self.players = []
             for player in players:
                 self.players.append(player)
             self.pot = 0
             self.deckForGame = deck
+            self.netConn = netConn
 
     def setupAndAnalyze(total_players):
         for player in total_players:
@@ -34,25 +74,38 @@ if __name__ == "__main__":
                     p1stack = 100
                 else:
                     p2stack = 100
-
+            elif reload == 'e':
+                exit()
+            else:
+                print('invalid response, exiting')
+                exit()
+        # netConn = NetworkServerThread()
+        # netConn.start()
+        # netConn.join()
 
         deckForGame = Deck()
         flop = (deckForGame.deck.pop(0),
                 deckForGame.deck.pop(0),
-                deckForGame.deck.pop(0)) 
+                deckForGame.deck.pop(0))
 
+        send_first_flop = str(flop[0]) 
+        print(send_first_flop)
         players = [Player(Board(flop, HoleCards(deckForGame))),
                 Player(Board(flop, HoleCards(deckForGame)))]
+    
         
         
         players[0].stack = p1stack
         players[1].stack = p2stack
 
         if not p1name:
-            p1name = input('Select player 1 name : ')
+            print('getting here')
+            p1name = netConn.connections[0][0].recv(1024).decode('ascii')
+            print(p1name)
         players[0].name = p1name
         if not p2name:
-            p2name = input('Select player 2 name : ')
+            p2name = netConn.connections[1][0].recv(1024).decode('ascii')
+            print(p2name)
         players[1].name = p2name
 
 
@@ -60,7 +113,7 @@ if __name__ == "__main__":
 
         total_players = players[:]
         setupAndAnalyze(total_players)
-        game = Game(total_players, deckForGame)
+        game = Game(total_players, deckForGame, netConn)
         start = GameRound(game, 0, firstToAct, BOARD)
         start.setup_action()
         start.bettingAction()
@@ -99,7 +152,21 @@ if __name__ == "__main__":
         firstToAct += 1
 
         print(f'pot is {game.pot}')
+        print('Board : ', end = ' ')
+        counter = 0
+        for card in BOARD:
+            print(f'| {card} |', end = '')
+            counter += 1
+            if counter > 2:
+                print('', end = '  ')
+
         for player in total_players:
+            print('')
+            print(f'\nHole Cards for {player.name}: ', end = '')
+
+            for card in player.board.holeCards.holecards:
+                print(f'| {card} |', end = '')
+            print('')
             print(player.board.initRank)
         
 
@@ -134,7 +201,7 @@ if __name__ == "__main__":
             players[0].stack += game.pot
         
         else:
-            print(f'{players[1].name} wins!')
+            print(f'\n{players[1].name} wins!')
             players[1].stack += game.pot
 
 
@@ -145,6 +212,7 @@ if __name__ == "__main__":
         
         mainGameLoop(firstToAct, p1stack, p2stack, p1name, p2name)
 
+    netConn = NetworkServer()
+    netConn.run()
     mainGameLoop()
         
-
