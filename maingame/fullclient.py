@@ -158,6 +158,7 @@ class Client:
                 if data == 'ISTURN':
                     representation = self.socket.recv(1024).decode('ascii')
                     self.print_current_gamestate_on_turn(representation)
+                    print(f'representation {representation}')
                     option = self.socket.recv(1024).decode('ascii')
                     print('reaching')
                     action = self.active_turn_representation(option)

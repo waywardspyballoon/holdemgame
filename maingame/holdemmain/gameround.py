@@ -103,17 +103,20 @@ class GameRound:
             bet(self, bet_val)
                 
     def callRaiseOrFold(self):
-
+        self.game.netConn.connections[self.firstToAct % 2][0].send('ISTURN'.encode('ascii'))
         self.print_action()
+        self.game.netConn.connections[self.firstToAct % 2][0].send('CRF'.encode('ascii'))
+        action = self.game.netConn.connections[self.firstToAct % 2][0].recv(1024).decode('ascii').lower()
         if self.street == 0 and self.game.pot == 2:
             self.checkOrRaise()
+
         
         print(f'\n[c]all (amount : {self.currentBet}, [r]aise, or [f]old \n')
         
-        self.game.netConn.connections[self.firstToAct % 2][0].send('ISTURN'.encode('ascii'))
-        self.game.netConn.connections[self.firstToAct % 2][0].send(f'{self.currentBet}'.encode('ascii'))
-        self.game.netConn.connections[self.firstToAct % 2][0].send('CRF'.encode('ascii'))
-        action = self.game.netConn.connections[self.firstToAct % 2][0].recv(1024).decode('ascii').lower()
+        # self.game.netConn.connections[self.firstToAct % 2][0].send('ISTURN'.encode('ascii'))
+        # self.game.netConn.connections[self.firstToAct % 2][0].send(f'{self.currentBet}'.encode('ascii'))
+        # self.game.netConn.connections[self.firstToAct % 2][0].send('CRF'.encode('ascii'))
+        # action = self.game.netConn.connections[self.firstToAct % 2][0].recv(1024).decode('ascii').lower()
 
         print(f'\n[c]all (amount : {self.currentBet}, [r]aise, or [f]old \n')
 
