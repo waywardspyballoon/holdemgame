@@ -112,7 +112,12 @@ class Client:
                 CB()
             
         def CRF():
-            selection = input('[c]all, [r]aise, or [f]old?')
+            
+##            call_info = self.socket.recv(1024).decode('ascii').split('*')
+##            call_info = str(call_info)
+            print('reaching this?')
+            print(f'[c]all, [r]aise, or [f]old?')
+            selection = input()
             if selection.lower() == 'c':
                 self.send('C')
                 return
@@ -157,18 +162,51 @@ class Client:
                 data = self.socket.recv(1024).decode('ascii')
                 if data == 'ISTURN':
                     representation = self.socket.recv(1024).decode('ascii')
-                    self.print_current_gamestate_on_turn(representation)
-                    print(f'representation {representation}')
+                    hole_cards = self.socket.recv(1024).decode('ascii')
+                    round_info = self.socket.recv(1024).decode('ascii')
+                    self.print_current_gamestate_on_turn(representation, hole_cards, round_info)
                     option = self.socket.recv(1024).decode('ascii')
-                    print('reaching')
                     action = self.active_turn_representation(option)
             except:
                 print('something went wrong')
                 break
 
-    def print_current_gamestate_on_turn(self, representation):
+    def print_current_gamestate_on_turn(self, representation, hole_cards, round_info):
         representation = representation.split('*')
-        print(f'{representation}')
+        hole_cards = hole_cards.split('*')
+        round_info = round_info.split('*')
+        representation.pop()
+        hole_cards.pop()
+        round_info.pop()
+        print(round_info)
+        os.system('cls')
+        representation = [int(item) for item in representation]
+        hole_cards = [int(item) for item in hole_cards]
+        board = ''
+        print(f'stack size: {round_info[1]} \n opponent stack: {round_info[0]} \
+                \n total pot: {round_info[2]}')
+        for _ , item in enumerate(representation):
+
+            if _ % 2 == 0:
+                board = board + '| ' + singrank[item + 1]
+            
+            else:
+                board = board + suits[item + 1] + ' |'
+
+        print(board)
+
+        hole_card_str = ''
+
+        for _ , item in enumerate(hole_cards):
+
+            if _ % 2 == 0:
+                hole_card_str = hole_card_str + '| ' + singrank[item + 1]
+            else:
+                hole_card_str = hole_card_str + suits[item + 1] + ' |'
+
+        print(f'\n{hole_card_str}')
+
+                
                 
     def send(self, message):
         self.socket.send(f'{message}'.encode('ascii'))
@@ -179,8 +217,3 @@ class Client:
 cl = Client('127.0.0.1', 1235)
 cl.connect()
 cl.recv()
-
-
-
-        
-    

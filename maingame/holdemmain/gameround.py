@@ -37,7 +37,16 @@ class GameRound:
               remaining stack {self.game.players[self.firstToAct % 2].stack}\
               size of pot {self.game.pot}')
         print('\n')
-              
+
+        if self.firstToAct % 2 == 1:
+            oppstack = self.game.players[0].stack
+        else:
+            oppstack = self.game.players[1].stack
+
+        round_info = ''
+        round_info = str(oppstack) + '*' + \
+        str(self.game.players[self.firstToAct % 2].stack) + '*' + str(self.game.pot) + '*'
+                      
         print('Board : ', end = ' ')
         counter = 0
         for card in self.board:
@@ -48,7 +57,7 @@ class GameRound:
 
         str_to_send = ''
         for card in self.board:
-            str_to_send += str(card.rank) + str(card.suit) + '*'
+            str_to_send += str(card.rank) + '*' + str(card.suit) + '*'
         self.game.netConn.connections[self.firstToAct % 2][0].send(f'{str_to_send}'.encode('ascii'))
         print(str_to_send)
             
@@ -57,6 +66,15 @@ class GameRound:
 
         for card in self.game.players[self.firstToAct % 2].board.holeCards.holecards:
             print(f'| {card} |', end = '')
+
+        hole_cards_to_send = ''
+        for card in self.game.players[self.firstToAct % 2].board.holeCards.holecards:
+            hole_cards_to_send += str(card.rank) + '*' + str(card.suit) + '*'
+        
+        self.game.netConn.connections[self.firstToAct % 2][0].send(f'{hole_cards_to_send}'.encode('ascii'))
+        self.game.netConn.connections[self.firstToAct % 2][0].send(f'{round_info}'.encode('ascii'))
+        
+
     
 
         print(f'\n{self.game.players[self.firstToAct % 2].board.initRank}')
@@ -106,17 +124,13 @@ class GameRound:
         self.game.netConn.connections[self.firstToAct % 2][0].send('ISTURN'.encode('ascii'))
         self.print_action()
         self.game.netConn.connections[self.firstToAct % 2][0].send('CRF'.encode('ascii'))
+        # self.game.netConn.connections[self.firstToAct % 2][0].send(f'{self.currentBet}'.encode('ascii'))
         action = self.game.netConn.connections[self.firstToAct % 2][0].recv(1024).decode('ascii').lower()
         if self.street == 0 and self.game.pot == 2:
             self.checkOrRaise()
 
         
         print(f'\n[c]all (amount : {self.currentBet}, [r]aise, or [f]old \n')
-        
-        # self.game.netConn.connections[self.firstToAct % 2][0].send('ISTURN'.encode('ascii'))
-        # self.game.netConn.connections[self.firstToAct % 2][0].send(f'{self.currentBet}'.encode('ascii'))
-        # self.game.netConn.connections[self.firstToAct % 2][0].send('CRF'.encode('ascii'))
-        # action = self.game.netConn.connections[self.firstToAct % 2][0].recv(1024).decode('ascii').lower()
 
         print(f'\n[c]all (amount : {self.currentBet}, [r]aise, or [f]old \n')
 
@@ -154,13 +168,13 @@ class GameRound:
             return None
 
     def callOrFold(self):
-        self.print_action()
-        print(f'\n[c]all bet (bet amount : {self.currentBet} with remaining stack : \
-                       {self.game.players[self.firstToAct % 2].stack}\n or [f]old?')
-        
         self.game.netConn.connections[self.firstToAct % 2][0].send('ISTURN'.encode('ascii'))
+        self.print_action()
         self.game.netConn.connections[self.firstToAct % 2][0].send('CF'.encode('ascii'))
         action = self.game.netConn.connections[self.firstToAct % 2][0].recv(1024).decode('ascii').lower()
+        print(f'\n[c]all bet (bet amount : {self.currentBet} with remaining stack : \
+                       {self.game.players[self.firstToAct % 2].stack}\n or [f]old?')
+
 
         if action == 'c':
 
