@@ -68,7 +68,14 @@ if __name__ == "__main__":
     
     def mainGameLoop(firstToAct = 0, p1stack = 100, p2stack = 100, p1name = 0, p2name = 0):
         if p1stack == 0 or p2stack == 0:
-            reload = input('[r]eload or [e]xit')
+            if p1stack == 0:
+                netConn.connections[0][0].send('RELOAD'.encode('ascii'))
+                reload = netConn.connections[0][0].recv(1024).decode('ascii')
+            elif p2stack == 0:
+                netConn.connections[1][0].send(f'RELOAD').encode('ascii')
+                reload = netConn.connections[0][0].recv(1024).decode('ascii')
+
+            # reload = input('[r]eload or [e]xit')
             if reload == 'r':
                 if not p1stack:
                     p1stack = 100

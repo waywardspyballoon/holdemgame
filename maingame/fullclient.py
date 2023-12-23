@@ -78,6 +78,20 @@ class Client:
         
         return current
 
+    def reload_func(self):
+        print(f'[r]eload? or [e]xit')
+        while 1:
+                
+            action = input()
+            if action.lower() == 'r':
+                self.send(action)
+                break
+            elif action.lower() == 'e':
+                exit()
+            else:
+                print('invalid selection')
+
+
     def active_turn_representation(self, option):
         def CR():
             selection = input('[c]heck or [r]aise? : ')
@@ -164,17 +178,25 @@ class Client:
                     representation = self.socket.recv(1024).decode('ascii')
                     hole_cards = self.socket.recv(1024).decode('ascii')
                     round_info = self.socket.recv(1024).decode('ascii')
-                    self.print_current_gamestate_on_turn(representation, hole_cards, round_info)
+                    hand_rank = self.socket.recv(1024).decode('ascii')
+                    self.print_current_gamestate_on_turn(representation, hole_cards, \
+                                                         round_info, hand_rank)
                     option = self.socket.recv(1024).decode('ascii')
                     action = self.active_turn_representation(option)
+                if data == 'ALLINORFOLD':
+                    pass
+                elif data == 'RELOAD':
+                    self.reload_func()
             except:
                 print('something went wrong')
                 break
 
-    def print_current_gamestate_on_turn(self, representation, hole_cards, round_info):
+    def print_current_gamestate_on_turn(self, representation, hole_cards, \
+                                        round_info, hand_rank):
         representation = representation.split('*')
         hole_cards = hole_cards.split('*')
         round_info = round_info.split('*')
+        hand_rank = str(hand_rank)
         representation.pop()
         hole_cards.pop()
         round_info.pop()
@@ -205,6 +227,7 @@ class Client:
                 hole_card_str = hole_card_str + suits[item + 1] + ' |'
 
         print(f'\n{hole_card_str}')
+        print(f'\n{hand_rank}')
 
                 
                 

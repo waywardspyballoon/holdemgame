@@ -45,7 +45,9 @@ class GameRound:
 
         round_info = ''
         round_info = str(oppstack) + '*' + \
-        str(self.game.players[self.firstToAct % 2].stack) + '*' + str(self.game.pot) + '*'
+        str(self.game.players[self.firstToAct % 2].stack) + '*' + str(self.game.pot) + '*' 
+        hand_rank = self.game.players[self.firstToAct % 2].board.initRank
+        
                       
         print('Board : ', end = ' ')
         counter = 0
@@ -71,12 +73,16 @@ class GameRound:
         for card in self.game.players[self.firstToAct % 2].board.holeCards.holecards:
             hole_cards_to_send += str(card.rank) + '*' + str(card.suit) + '*'
         
+        opponent_action = None
+        if self.game.players[self.firstToAct % 2] == 1:
+            opp = 0
+        else:
+            opp = 1
+        
         self.game.netConn.connections[self.firstToAct % 2][0].send(f'{hole_cards_to_send}'.encode('ascii'))
         self.game.netConn.connections[self.firstToAct % 2][0].send(f'{round_info}'.encode('ascii'))
+        self.game.netConn.connections[self.firstToAct % 2][0].send(f'{hand_rank}'.encode('ascii'))
         
-
-    
-
         print(f'\n{self.game.players[self.firstToAct % 2].board.initRank}')
         
     
@@ -99,7 +105,6 @@ class GameRound:
         self.game.netConn.connections[self.firstToAct % 2][0].send('ISTURN'.encode('ascii'))
         self.print_action()
         self.game.netConn.connections[self.firstToAct % 2][0].send('CB'.encode('ascii'))
-        # action = input(f'\n[c]heck, [b]et (amount 0 - {self.game.players[self.firstToAct % 2].stack}\n')
         print(f'\n[c]heck, [b]et (amount 0 - {self.game.players[self.firstToAct % 2].stack}\n')
 
         action = self.game.netConn.connections[self.firstToAct % 2][0].recv(1024).decode('ascii').lower()
@@ -124,7 +129,6 @@ class GameRound:
         self.game.netConn.connections[self.firstToAct % 2][0].send('ISTURN'.encode('ascii'))
         self.print_action()
         self.game.netConn.connections[self.firstToAct % 2][0].send('CRF'.encode('ascii'))
-        # self.game.netConn.connections[self.firstToAct % 2][0].send(f'{self.currentBet}'.encode('ascii'))
         action = self.game.netConn.connections[self.firstToAct % 2][0].recv(1024).decode('ascii').lower()
         if self.street == 0 and self.game.pot == 2:
             self.checkOrRaise()
@@ -132,7 +136,6 @@ class GameRound:
         
         print(f'\n[c]all (amount : {self.currentBet}, [r]aise, or [f]old \n')
 
-        print(f'\n[c]all (amount : {self.currentBet}, [r]aise, or [f]old \n')
 
         if not action:
             print('try again, empty field is not valid response')
@@ -271,15 +274,10 @@ def bet(roundObject, amount = 0):
         roundObject.firstToAct += 1
         return None
     
-    
-    # stack_size = roundObject.game.players[roundObject.firstToAct % 2].stack
-    # roundObject.game.netConn.connections[roundObject.firstToAct % 2][0].send(f'{stack_size}'.encode('ascii'))
-    # current = float(roundObject.game.netConn.connections[roundObject.firstToAct % 2][0].recv(1024).decode('ascii'))
     if amount > 0:
         bettingLogic(amount)
         return None
     
-    # current = input(f'input amount from 1 - {roundObject.game.players[roundObject.firstToAct % 2].stack} \n')
     if current == '':
         print('invalid selection, field cannot be blank')
         bet(roundObject)
@@ -306,26 +304,9 @@ def raiseBet(roundObject):
     upperBound = int(roundObject.game.players[roundObject.firstToAct % 2].stack + roundObject.game.players[roundObject.firstToAct % 2].playerLastBet)
     range_for_bet = f'{roundObject.currentBet}*{upperBound}'
     roundObject.game.netConn.connections[roundObject.firstToAct % 2][0].send(f'{range_for_bet}'.encode('ascii'))
-    # new_value = input(f'raise size (between {roundObject.currentBet} and \
-    #                     {upperBound} \n')
+
     new_value = roundObject.game.netConn.connections[roundObject.firstToAct % 2][0].recv(1024).decode('ascii')
     new_value = float(new_value)
-    
-
-    # if new_value > upperBound:
-    #     print('invalid selection, value must be lower than or equal to stack size')
-    #     new_value = 0
-    #     raiseBet(roundObject)
-
-    # elif new_value < 0:
-    #     print('invalid selection, value must be greater than 0')
-    #     new_value = 0
-    #     raiseBet(roundObject)
-
-    # elif new_value <= roundObject.currentBet:
-    #     print('invalid selection, value must exceed current raise size')
-    #     new_value = 0
-    #     raiseBet(roundObject)
 
     if new_value:
         roundObject.currentBet = new_value
