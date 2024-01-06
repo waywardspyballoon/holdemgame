@@ -50,8 +50,6 @@ class Client:
                 continue
             else:
                 break
-##        raise_size = 2
-        print('exiting_loop')
         return raise_size
 
     def bet_func(self, stack_size):
@@ -78,6 +76,12 @@ class Client:
         
         return current
 
+    def fold_function(self):
+        round_info = self.socket.recv(1024).decode('ascii').split('*')
+        round_info.pop()
+        opp_name, pot_size = round_info
+        print(f'{opp_name} has folded, you win pot! ({pot_size})')
+
     def reload_func(self):
         print(f'[r]eload? or [e]xit')
         while 1:
@@ -90,6 +94,15 @@ class Client:
                 exit()
             else:
                 print('invalid selection')
+
+    def round_end(self):
+        representation = self.socket.recv(1024).decode('ascii')
+        print(f'representation {representation}')
+        time.sleep(4)
+        print(f'winner {winner}')
+
+        self.print_current_gamestate_on_turn(representation, 
+                                             hole_cards, hand_rank, round_info)
 
 
     def active_turn_representation(self, option):
@@ -129,7 +142,6 @@ class Client:
             
 ##            call_info = self.socket.recv(1024).decode('ascii').split('*')
 ##            call_info = str(call_info)
-            print('reaching this?')
             print(f'[c]all, [r]aise, or [f]old?')
             selection = input()
             if selection.lower() == 'c':
@@ -180,11 +192,14 @@ class Client:
                     round_info = self.socket.recv(1024).decode('ascii')
                     hand_rank = self.socket.recv(1024).decode('ascii')
                     self.print_current_gamestate_on_turn(representation, hole_cards, \
-                                                         round_info, hand_rank)
+                                                         hand_rank, round_info)
                     option = self.socket.recv(1024).decode('ascii')
                     action = self.active_turn_representation(option)
-                if data == 'ALLINORFOLD':
-                    pass
+                elif data == 'ROUNDEND':
+                    print('round end')
+                    self.round_end()
+                elif data == 'OPPFOLD':
+                    self.fold_function()
                 elif data == 'RELOAD':
                     self.reload_func()
             except:
@@ -192,7 +207,9 @@ class Client:
                 break
 
     def print_current_gamestate_on_turn(self, representation, hole_cards, \
-                                        round_info, hand_rank):
+                                        hand_rank, round_info = None, hole_cards2 = None, \
+                                        hand_rank2 = None, winner = None):
+        print('progressing this far')
         representation = representation.split('*')
         hole_cards = hole_cards.split('*')
         round_info = round_info.split('*')

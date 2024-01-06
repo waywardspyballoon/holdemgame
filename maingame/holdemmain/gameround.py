@@ -57,12 +57,15 @@ class GameRound:
             if counter > 2:
                 print('', end = '  ')
 
+## representation
+                
         str_to_send = ''
         for card in self.board:
             str_to_send += str(card.rank) + '*' + str(card.suit) + '*'
         self.game.netConn.connections[self.firstToAct % 2][0].send(f'{str_to_send}'.encode('ascii'))
         print(str_to_send)
-            
+
+## end block for representation
 
         print('\nHole Cards : ', end = '')
 
