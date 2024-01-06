@@ -96,13 +96,26 @@ class Client:
                 print('invalid selection')
 
     def round_end(self):
-        representation = self.socket.recv(1024).decode('ascii')
-        print(f'representation {representation}')
-        time.sleep(4)
-        print(f'winner {winner}')
+        round_end_str = self.socket.recv(1024).decode('ascii')
+        print(f'res {round_end_str}')
+        round_end_str = round_end_str.split('*')
+        board = round_end_str[:10]
+        hole_cards = round_end_str[10:14]
+        hole_cards_2 = round_end_str[15:19]
+        hand_rank_1 = round_end_str[20]
+        hand_rank_2 = round_end_str[21]
+        winner = round_end_str[22]
+        
+        round_info = '10*10*10*'
+        round_info = round_info.split('*')
+        print(f'{winner}')
+        print(f'{board}')
+        print(f'{hole_cards} , {hole_cards_2}')
+        print(f'{hand_rank_1} , {hand_rank_2}')
+        
 
-        self.print_current_gamestate_on_turn(representation, 
-                                             hole_cards, hand_rank, round_info)
+        self.print_current_gamestate_on_turn(board, \
+                                             hole_cards, hand_rank_1, round_info)
 
 
     def active_turn_representation(self, option):
@@ -191,6 +204,11 @@ class Client:
                     hole_cards = self.socket.recv(1024).decode('ascii')
                     round_info = self.socket.recv(1024).decode('ascii')
                     hand_rank = self.socket.recv(1024).decode('ascii')
+                    representation = representation.split('*')
+                    hole_cards = hole_cards.split('*')
+                    round_info = round_info.split('*')
+                    representation.pop()
+                    hole_cards.pop()
                     self.print_current_gamestate_on_turn(representation, hole_cards, \
                                                          hand_rank, round_info)
                     option = self.socket.recv(1024).decode('ascii')
@@ -210,12 +228,7 @@ class Client:
                                         hand_rank, round_info = None, hole_cards2 = None, \
                                         hand_rank2 = None, winner = None):
         print('progressing this far')
-        representation = representation.split('*')
-        hole_cards = hole_cards.split('*')
-        round_info = round_info.split('*')
         hand_rank = str(hand_rank)
-        representation.pop()
-        hole_cards.pop()
         round_info.pop()
         print(round_info)
         os.system('cls')
