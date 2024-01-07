@@ -97,7 +97,7 @@ class Client:
 
     def round_end(self):
         round_end_str = self.socket.recv(1024).decode('ascii')
-        print(f'res {round_end_str}')
+        print(f'{round_end_str}')
         round_end_str = round_end_str.split('*')
         board = round_end_str[:10]
         hole_cards = round_end_str[10:14]
@@ -105,7 +105,6 @@ class Client:
         hand_rank_1 = round_end_str[20]
         hand_rank_2 = round_end_str[21]
         winner = round_end_str[22]
-        
         round_info = '10*10*10*'
         round_info = round_info.split('*')
         print(f'{winner}')
@@ -115,7 +114,8 @@ class Client:
         
 
         self.print_current_gamestate_on_turn(board, \
-                                             hole_cards, hand_rank_1, round_info)
+                                             hole_cards, hand_rank_1, round_info,\
+                                             hole_cards_2, hand_rank_2, winner)
 
 
     def active_turn_representation(self, option):
@@ -234,6 +234,8 @@ class Client:
         os.system('cls')
         representation = [int(item) for item in representation]
         hole_cards = [int(item) for item in hole_cards]
+        if hole_cards2:
+            hole_cards2 = [int(item) for item in hole_cards2]
         board = ''
         print(f'stack size: {round_info[1]} \n opponent stack: {round_info[0]} \
                 \n total pot: {round_info[2]}')
@@ -247,17 +249,30 @@ class Client:
 
         print(board)
 
-        hole_card_str = ''
+        
+        def hole_card_string(hole_cards):
+            hole_card_str = ''
 
-        for _ , item in enumerate(hole_cards):
+            for _ , item in enumerate(hole_cards):
 
-            if _ % 2 == 0:
-                hole_card_str = hole_card_str + '| ' + singrank[item + 1]
-            else:
-                hole_card_str = hole_card_str + suits[item + 1] + ' |'
+                if _ % 2 == 0:
+                    hole_card_str = hole_card_str + '| ' + singrank[item + 1]
+                else:
+                    hole_card_str = hole_card_str + suits[item + 1] + ' |'
 
-        print(f'\n{hole_card_str}')
-        print(f'\n{hand_rank}')
+            return hole_card_str
+
+        print(f'\n{hole_card_string(hole_cards)}', end = '')
+        if hole_cards2:
+            print(f'  {hole_card_string(hole_cards2)}')
+        print(f'\n {self.name} : {hand_rank}', end = '')
+        if hand_rank2:
+            print(f'   opponent : {hand_rank2}')
+
+        if winner:
+            print(f'\n {winner} wins pot, {round_info[2]}')
+
+        print('')
 
                 
                 
