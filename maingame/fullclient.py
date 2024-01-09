@@ -105,8 +105,9 @@ class Client:
         hand_rank_1 = round_end_str[20]
         hand_rank_2 = round_end_str[21]
         winner = round_end_str[22]
-        round_info = '10*10*10*'
-        round_info = round_info.split('*')
+        # round_info = '10*10*10*'
+        # round_info = round_info.split('*')
+        round_info = round_end_str[23:]
         print(f'{winner}')
         print(f'{board}')
         print(f'{hole_cards} , {hole_cards_2}')
@@ -221,7 +222,7 @@ class Client:
                 elif data == 'RELOAD':
                     self.reload_func()
             except:
-                print('something went wrong')
+                #print('something went wrong')
                 break
 
     def print_current_gamestate_on_turn(self, representation, hole_cards, \
@@ -233,23 +234,6 @@ class Client:
         print(round_info)
         os.system('cls')
         representation = [int(item) for item in representation]
-        hole_cards = [int(item) for item in hole_cards]
-        if hole_cards2:
-            hole_cards2 = [int(item) for item in hole_cards2]
-        board = ''
-        print(f'stack size: {round_info[1]} \n opponent stack: {round_info[0]} \
-                \n total pot: {round_info[2]}')
-        for _ , item in enumerate(representation):
-
-            if _ % 2 == 0:
-                board = board + '| ' + singrank[item + 1]
-            
-            else:
-                board = board + suits[item + 1] + ' |'
-
-        print(board)
-
-        
         def hole_card_string(hole_cards):
             hole_card_str = ''
 
@@ -260,7 +244,28 @@ class Client:
                 else:
                     hole_card_str = hole_card_str + suits[item + 1] + ' |'
 
-            return hole_card_str
+            return hole_card_str     
+        hole_cards = [int(item) for item in hole_cards]
+        if hole_cards2:
+            hole_cards2 = [int(item) for item in hole_cards2]
+        board = ''
+        print(f'stack size: {round_info[1]} \n opponent stack: {round_info[0]} \
+                \n total pot: {round_info[2]}')
+        print(f'len round info{len(round_info)}')
+        if len(round_info) > 3:
+            if round_info[3] == '0':
+                print(f'\nHole cards: \n{hole_card_string(hole_cards)}\n', end = '')
+
+                return
+        
+        for _ , item in enumerate(representation):
+
+            if _ % 2 == 0:
+                board = board + '| ' + singrank[item + 1]
+            
+            else:
+                board = board + suits[item + 1] + ' |'
+        print(board)
 
         print(f'\n{hole_card_string(hole_cards)}', end = '')
         if hole_cards2:

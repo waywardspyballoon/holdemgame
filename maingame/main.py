@@ -90,11 +90,11 @@ if __name__ == "__main__":
                 strs_to_send[first] += hole_to_send + '*'
                 counter -= 1
         #refactor end
-        for _ in range(1,-1,-1):
-            round_info = '' 
-            round_info + str(game.players[ abs(_ - 1) ].stack) + '*' + \
-            str(game.players[_].stack) + '*' + str(game.pot) + '*'
-            strs_to_send[_] += round_info
+        # for _ in range(1,-1,-1):
+        #     round_info = '' 
+        #     round_info += str(game.players[ abs(_ - 1) ].stack) + '*' + \
+        #     str(game.players[_].stack) + '*' + str(game.pot) + '*'
+        #     strs_to_send[_] += round_info
         #good candidate for refactoring
 ##        hand_ranks_to_send = [str(game.players[0].board.initRank) , str(game.players[1].board.initRank)]
         for first in range(2):
@@ -106,26 +106,23 @@ if __name__ == "__main__":
         winner = game.players[winner].name
         for _ in range(2):
             strs_to_send[_] += winner + '*'
+
+        for _ in range(1,-1,-1):
+            round_info = '' 
+            round_info += str(game.players[ abs(_ - 1) ].stack) + '*' + \
+            str(game.players[_].stack) + '*' + str(game.pot) + '*'
+            strs_to_send[_] += round_info
         
         print(strs_to_send)
+
+        print(f'round info?!!?!? {round_info}')
+
+
         for _ in range(2):
             netConn.connections[_][0].send(f'{strs_to_send[_]}'.encode('ascii'))
         
         time.sleep(3)
-        #refactor end
-        
-
-
-
-
-            
-            
-
-
-
-
-        
-        
+        #refactor end       
 
     def mainGameLoop(firstToAct = 0, p1stack = 100, p2stack = 100, p1name = 0, p2name = 0):
         if p1stack == 0 or p2stack == 0:
@@ -133,7 +130,7 @@ if __name__ == "__main__":
                 netConn.connections[0][0].send('RELOAD'.encode('ascii'))
                 reload = netConn.connections[0][0].recv(1024).decode('ascii')
             elif p2stack == 0:
-                netConn.connections[1][0].send(f'RELOAD').encode('ascii')
+                netConn.connections[1][0].send(f'RELOAD'.encode('ascii'))
                 reload = netConn.connections[0][0].recv(1024).decode('ascii')
 
             # reload = input('[r]eload or [e]xit')
@@ -185,6 +182,12 @@ if __name__ == "__main__":
         start = GameRound(game, 0, firstToAct, BOARD)
         start.setup_action()
         start.bettingAction()
+
+        #beginning of extra round
+        start = GameRound(game, 1, firstToAct, BOARD)
+        start.setup_action()
+        start.bettingAction()
+        #end of extra round
         
         print('dealing turn')
 
@@ -198,7 +201,7 @@ if __name__ == "__main__":
 
         if players[0].didFold == False and players[1].didFold == False:
     
-            start = GameRound(game, 1, firstToAct, BOARD)
+            start = GameRound(game, 2, firstToAct, BOARD)
             start.setup_action()
             start.bettingAction()
 
@@ -212,7 +215,7 @@ if __name__ == "__main__":
 
         if players[0].didFold == False and players[1].didFold == False:
 
-            start = GameRound(game, 2, firstToAct, BOARD)
+            start = GameRound(game, 3, firstToAct, BOARD)
             start.setup_action()
             start.bettingAction()
 

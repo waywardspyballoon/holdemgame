@@ -45,7 +45,8 @@ class GameRound:
 
         round_info = ''
         round_info = str(oppstack) + '*' + \
-        str(self.game.players[self.firstToAct % 2].stack) + '*' + str(self.game.pot) + '*' 
+        str(self.game.players[self.firstToAct % 2].stack) + '*' + str(self.game.pot) + '*' \
+        + str(self.street) + '*'
         hand_rank = self.game.players[self.firstToAct % 2].board.initRank
         
                       
