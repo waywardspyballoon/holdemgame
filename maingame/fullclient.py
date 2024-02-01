@@ -16,6 +16,7 @@ class Client:
 
     def __init__(self, servip, servport):
         
+        self.currentBet = 0
         self.name = None
         self.id = None
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -156,7 +157,7 @@ class Client:
             
 ##            call_info = self.socket.recv(1024).decode('ascii').split('*')
 ##            call_info = str(call_info)
-            print(f'[c]all, [r]aise, or [f]old?')
+            print(f'[c]all {self.currentBet}, [r]aise, or [f]old?')
             selection = input()
             if selection.lower() == 'c':
                 self.send('C')
@@ -175,7 +176,7 @@ class Client:
                 CRF()
                         
         def CF():
-            selection = input('[c]all or [f]old?')
+            selection = input(f'[c]all {self.currentBet} or [f]old?')
             if selection.lower() == 'c':
                 self.send('C')
                 return
@@ -228,11 +229,16 @@ class Client:
     def print_current_gamestate_on_turn(self, representation, hole_cards, \
                                         hand_rank, round_info = None, hole_cards2 = None, \
                                         hand_rank2 = None, winner = None):
-        print('progressing this far')
+        street = {0: 'PREFLOP', 1: 'FLOP', 2: 'TURN', 3: 'RIVER'}
         hand_rank = str(hand_rank)
         round_info.pop()
         print(round_info)
         os.system('cls')
+        if len(round_info) > 4:
+            self.currentBet = round_info[4]
+            print(f'{street[int(round_info[3])]}')
+        else:
+            print(f'{street[3]}')
         representation = [int(item) for item in representation]
         def hole_card_string(hole_cards):
             hole_card_str = ''
@@ -251,7 +257,6 @@ class Client:
         board = ''
         print(f'stack size: {round_info[1]} \n opponent stack: {round_info[0]} \
                 \n total pot: {round_info[2]}')
-        print(f'len round info{len(round_info)}')
         if len(round_info) > 3:
             if round_info[3] == '0':
                 print(f'\nHole cards: \n{hole_card_string(hole_cards)}\n', end = '')
