@@ -131,7 +131,7 @@ if __name__ == "__main__":
                 reload = netConn.connections[0][0].recv(1024).decode('ascii')
             elif p2stack == 0:
                 netConn.connections[1][0].send(f'RELOAD'.encode('ascii'))
-                reload = netConn.connections[0][0].recv(1024).decode('ascii')
+                reload = netConn.connections[1][0].recv(1024).decode('ascii')
 
             # reload = input('[r]eload or [e]xit')
             if reload == 'r':
