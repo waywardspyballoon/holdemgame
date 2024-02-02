@@ -103,7 +103,10 @@ if __name__ == "__main__":
                 rank_to_send = ranks[abs(counter)]
                 strs_to_send[first] += rank_to_send + '*'
                 counter -= 1
-        winner = game.players[winner].name
+        if winner != 2:
+            winner = game.players[winner].name
+        else:
+            winner = 'tie'
         for _ in range(2):
             strs_to_send[_] += winner + '*'
 
@@ -182,12 +185,12 @@ if __name__ == "__main__":
         start = GameRound(game, 0, firstToAct, BOARD)
         start.setup_action()
         start.bettingAction()
+        if players[0].didFold == False and players[1].didFold == False:
 
-        #beginning of extra round
-        start = GameRound(game, 1, firstToAct, BOARD)
-        start.setup_action()
-        start.bettingAction()
-        #end of extra round
+            start = GameRound(game, 1, firstToAct, BOARD)
+            start.setup_action()
+            start.bettingAction()
+
         
         print('dealing turn')
 
@@ -276,7 +279,7 @@ if __name__ == "__main__":
         if players[0].board == players[1].board:
 
             print('tie! split pot!')
-            win_broadcast(0,1,game,BOARD)
+            win_broadcast(2,0,game,BOARD)
             
 
             for player in game.players:

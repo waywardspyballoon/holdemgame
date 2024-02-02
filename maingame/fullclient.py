@@ -144,9 +144,7 @@ class Client:
             if selection.lower() == 'b':
                 self.send('B')
                 bet_info = self.socket.recv(1024).decode('ascii')
-                print('before function')
                 bet_transmit = self.bet_func(bet_info)
-                print('after function')
                 self.socket.send(f'{bet_transmit}'.encode('ascii'))
                 return
             else:
@@ -280,7 +278,10 @@ class Client:
             print(f'   opponent : {hand_rank2}')
 
         if winner:
-            print(f'\n {winner} wins pot, {round_info[2]}')
+            if winner == 'tie':
+                print(f'\n {winner}!  Players split pot ({round_info[2]})')
+            else:
+                print(f'\n {winner} wins pot, {round_info[2]}')
 
         print('')
 
